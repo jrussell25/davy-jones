@@ -70,16 +70,3 @@ DESCRIPTIONS = [
         "Fault detected. Laser will not run. Use read_history to investigate",
     ],
 ]
-
-
-def print_state(status):
-    status_bits = to_bits(status)
-    description_bits = status_bits[:16]
-    state = state_number(status_bits)
-    print("Bit Interpretation Description")
-    for i, interp in enumerate(INTERPRETATION):
-        bit = int(description_bits[i])
-        print(f"{i:3d} {interp:14s} {DESCRIPTIONS[i][bit]}")
-
-    print()
-    print(f"Status Code {state:3d} -- {state_defs(state)}")

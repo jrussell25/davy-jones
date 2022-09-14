@@ -1,9 +1,13 @@
+import time
+from typing import Any
+
+import serial
 from pyvisa import ResourceManager
 from pyvisa.resources.serial import SerialInstrument
-import serial
+from serial import SerialException
 from serial.tools import list_ports
 
-from .status_codes import state_defs, state_number
+from .status_codes import state_number
 
 
 def port_map() -> None:
@@ -12,18 +16,18 @@ def port_map() -> None:
             s_test = serial.Serial(p.name)
             s_test.close()
             print(p)
-        except:
+        except SerialException:
             pass
 
 
 class DeepSee:
-    def __init__(self, port_name: Optional[str] = "ASRL4::INSTR", **kwargs):
-        super().__init__(self, **kwargs)
+    def __init__(self, port_name: str = "ASRL4::INSTR", **kwargs: Any):
+        # super().__init__(self, **kwargs)
         self.rm = ResourceManager()
         self.device = self._setup_device(port_name)
 
         self.min_wavelength = int(self.device.query("wav:min?"))
-        self.max_wavelenth = int(self.devuce.query("wav:max?"))
+        self.max_wavelenth = int(self.device.query("wav:max?"))
 
     def _setup_device(self, port_name: str) -> SerialInstrument:
         device = ResourceManager().open_resource(port_name)
@@ -55,11 +59,18 @@ class DeepSee:
                     break
 
     def get_status(self) -> int:
-        status = self.query("*stb?")
+        status = self.device.query("*stb?")
         return state_number(status)
 
     def set_wavelength(self, wav: int) -> None:
-        self.device.write(f"wav")
+        wav = int(wav)
+        low = self.min_wavelength
+        high = self.max_wavelenth
+
+        if (self.min_wavelength > wav) or (self.max_wavelenth < wav):
+            raise ValueError(f"Require {low} <= wav <= {high}. Found {wav=}.")
+
+        self.device.write(f"wav {wav}")
 
     def open_pump_shutter(self):
         self.device.write("shut 1")
