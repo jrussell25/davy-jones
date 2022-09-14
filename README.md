@@ -11,31 +11,32 @@ in place of unwieldy serial commands.
 
 ## Table of serial commands
 
-
-ON
-OFF
-IRSHUTter
-IRSHUTter?
-LCD:BRIGtness
-MODE RUN
-MODE ALIGN
-MODE?
-READ:AHIStory?
-READ:HUM?
-READ:PCTWarmedup?
-READ:PLASer:DIODe(n):CURRent?
-READ:PLASer:DIODe(n):TEMPerature?
-READ:PLASer:DIODe(n):HOURS
-READ:POWer?
-READ:WAVelength?
-SAVe
-SHUTDOWN
-SHUTter (n)
-SHUTter?
-TIMer:WATChdog (n)
-WAVelength (nnn)
-WAVelength?
-WAVelength:min?
-WAVelength:max?
-\*IDN?
-\*STB?
+| Serial command | `davy_jones.DeepSee` method|
+|----------------|----------------------------|
+| ON | `power_on` |
+| OFF | `NotImplemented`|
+| IRSHUTter | `open_stokes_shutter`/`close_stokes_shutter`|
+| IRSHUTter? | `NotImplemented`|
+| LCD:BRIGtness | `NotImplemented`|
+| MODE RUN | `NotImplemented`|
+| MODE ALIGN | `NotImplemented`|
+| MODE? | `NotImplemented`|
+| READ:AHIStory? | `NotImplemented`|
+| READ:HUM? | `NotImplemented`|
+| READ:PCTWarmedup? | `NotImplemented`|
+| READ:PLASer:DIODe(n):CURRent? | `NotImplemented`|
+| READ:PLASer:DIODe(n):TEMPerature? | `NotImplemented`|
+| READ:PLASer:DIODe(n):HOURS | `NotImplemented`|
+| READ:POWer? |`NotImplemented`|
+| READ:WAVelength? |`NotImplemented`|
+| SAVe |`NotImplemented`|
+| SHUTDOWN | `NotImplemented`|
+| SHUTter (n) | `open_pump_shutter`/`close_pump_shutter` |
+| SHUTter? | `NotImplemented`|
+| TIMer:WATChdog (n) | `NotImplemented`|
+| WAVelength (nnn) | `set_wavelength` |
+| WAVelength? | `NotImplemented`|
+| WAVelength:min? | `min_wavelength` (attribute) |
+| WAVelength:max? | `max_wavelength` (attribute) |
+| \*IDN? | `NotImplemented`|
+| \*STB? | `get_status` |
