@@ -5,8 +5,9 @@ in place of unwieldy serial commands.
 
 
 ## Installation
+Clone this repository and then move into the top level directory. Then
 
-`pip install davy-jones`
+`pip install .`
 
 
 ## Table of serial commands
