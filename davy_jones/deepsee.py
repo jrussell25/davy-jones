@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import time
-from typing import Any
 
 import serial
 from pyvisa import ResourceManager
@@ -20,11 +21,25 @@ def port_map() -> None:
             pass
 
 
+_instance = None
+
+
 class DeepSee:
-    def __init__(self, port_name: str = "ASRL4::INSTR", **kwargs: Any):
-        # super().__init__(self, **kwargs)
-        self.rm = ResourceManager()
-        self.device = self._setup_device(port_name)
+    @classmethod
+    def instance(cls, port_name: str = "ASRL4::INSTR", fake: bool = False) -> DeepSee:
+        global _instance
+        if _instance is None:
+            _instance = cls(port_name, fake)
+        return _instance
+
+    def __init__(self, port_name: str = "ASRL4::INSTR", fake: bool = False):
+        if not fake:
+            self.rm = ResourceManager()
+            self.device = self._setup_device(port_name)
+        else:
+            from .fake_device import FakeDevice
+
+            self.device = FakeDevice()
 
         self.min_wavelength = int(self.device.query("wav:min?"))
         self.max_wavelenth = int(self.device.query("wav:max?"))
@@ -87,6 +102,19 @@ class DeepSee:
                 if status == 50:
                     break
 
+    def power_off(self):
+        """
+        Turn off the laser diodes but leave the ovens on for quick restart.
+        To fully power down the system see shutdown.
+        """
+        self.device.write("off")
+
+    def shutdown(self):
+        """
+        Fully power down the laser to prepare to shut of the power main.
+        """
+        self.device.write("shutdown")
+
     def get_status(self) -> int:
         """
         Get the status number of the system. See Appendix B of the user manual
@@ -138,6 +166,16 @@ class DeepSee:
         """
         self.device.write("irshut 1")
 
+    def pump_shutter_state(self) -> bool:
+        status = int(self.device.query("*stb?"))
+        bit_mask = 0x00000004
+        return bool(status & bit_mask)
+
+    def stokes_shutter_state(self) -> bool:
+        status = self.device.query("*stb?")
+        bit_mask = 0x00000008
+        return bool(status & bit_mask)
+
     def close_pump_shutter(self):
         """
         Close the pump beam shutter.
@@ -150,13 +188,6 @@ class DeepSee:
         """
 
         self.device.write("irshut 0")
-
-    def get_shutter_state(self):
-
-        pump = int(self.device.query("shut?"))
-        stokes = int(self.device.query("irshut?"))
-        states = ["OPEN", "CLOSED"]
-        print(f"Pump shutter is {states[pump]} -- Stokes shutter is {states[stokes]}")
 
     def get_watchdog_time(self) -> float:
         """
@@ -184,3 +215,10 @@ class DeepSee:
         None
         """
         self.device.write(f"time.watc {seconds}")
+
+    def close(self):
+        self.set_watchdog_time(3)
+        self.close_pump_shutter()
+        self.close_stokes_shutter()
+        self.power_off()
+        self.device.close()
