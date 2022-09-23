@@ -9,6 +9,25 @@ Clone this repository and then move into the top level directory. Then
 
 `pip install .`
 
+## Usage
+
+To initialize a connection to the DeepSee laser use the class method `.instance()` to prevent multiple connections
+to the same device.
+
+`deepsee = DeepSee.instance() `
+
+Then you can operate the laser:
+
+```python
+deepsee.power_on()
+deepsee.set_wavelength(800)
+deepsee.open_pump_shutter()
+deepsee.open_stokes_shutter()
+# do your experiment
+
+deepsee.close() # Reset watchdog, close shuttters, power off, close serial connection
+```
+
 
 ## Table of serial commands
 
@@ -18,9 +37,9 @@ directly via `DeepSee.device` which is the underlying pyvisa serial object.
 | Serial command | `davy_jones.DeepSee` method|
 |----------------|----------------------------|
 | ON | `power_on` |
-| OFF | `NotImplemented`|
+| OFF | `power_off`|
 | IRSHUTter | `open_stokes_shutter`/`close_stokes_shutter`|
-| IRSHUTter? | `get_shutter_state`|
+| IRSHUTter? | `stokes_shutter_state`|
 | LCD:BRIGtness | `NotImplemented`|
 | MODE RUN | `NotImplemented`|
 | MODE ALIGN | `NotImplemented`|
@@ -34,12 +53,12 @@ directly via `DeepSee.device` which is the underlying pyvisa serial object.
 | READ:POWer? |`NotImplemented`|
 | READ:WAVelength? |`get_wavelength`|
 | SAVe |`NotImplemented`|
-| SHUTDOWN | `NotImplemented`|
+| SHUTDOWN | `shutdown`|
 | SHUTter (n) | `open_pump_shutter`/`close_pump_shutter` |
-| SHUTter? | `get_shutter_state`|
+| SHUTter? | `pump_shutter_state`|
 | TIMer:WATChdog (n) | `set_watchdog_time`|
 | WAVelength (nnn) | `set_wavelength` |
-| WAVelength? | `NotImplemented`|
+| WAVelength? | `get_wavelength`|
 | WAVelength:min? | `min_wavelength` (attribute) |
 | WAVelength:max? | `max_wavelength` (attribute) |
 | \*IDN? | `NotImplemented`|

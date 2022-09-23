@@ -162,13 +162,13 @@ class DeepSee:
 
         return int(self.device.query("read:wav?"))
 
-    def open_pump_shutter(self):
+    def open_pump_shutter(self)-> None:
         """
         Open the pump beam shutter.
         """
         self.device.write("shut 1")
 
-    def open_stokes_shutter(self):
+    def open_stokes_shutter(self) -> None:
         """
         Open the stokes/IR/fixed beam shutter.
         """
