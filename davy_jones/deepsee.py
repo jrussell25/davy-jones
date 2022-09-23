@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+import warnings
 
 import serial
 from pyvisa import ResourceManager
@@ -26,16 +27,23 @@ _instance = None
 
 class DeepSee:
     @classmethod
-    def instance(cls, port_name: str = "ASRL4::INSTR", fake: bool = False) -> DeepSee:
+    def instance(cls, port_name: str = "ASRL4::INSTR", disable_watchdog: bool = True, fake: bool = False) -> DeepSee:
         global _instance
         if _instance is None:
-            _instance = cls(port_name, fake)
+            _instance = cls(port_name, disable_watchdog, fake)
         return _instance
 
-    def __init__(self, port_name: str = "ASRL4::INSTR", fake: bool = False):
+    def __init__(self, port_name: str = "ASRL4::INSTR", disable_watchdog: bool = True, fake: bool = False):
         if not fake:
             self.rm = ResourceManager()
             self.device = self._setup_device(port_name)
+            wdt = self.get_watchdog_time()
+            if wdt > 0: 
+                warnings.warn(f"Found watchdog timer set to {wdt:0.1f} seconds.")
+                if disable_watchdog:
+                    self.set_watchdog_time(0)
+                    print("Disabling watchdog timer.")
+                    
         else:
             from .fake_device import FakeDevice
 
@@ -97,7 +105,7 @@ class DeepSee:
                 count += 1
                 status = self.get_status()
                 if verbose:
-                    print(f"{count} s - {status=:03d}")
+                    print(f"{count} s - {status=:03d}\r")
 
                 if status == 50:
                     break
@@ -196,7 +204,7 @@ class DeepSee:
         it will power off to prevent emission.
         """
 
-        return float(self.device.query("time:watc?"))
+        return float(self.device.query("tim:watc?"))
 
     def set_watchdog_time(self, seconds: int) -> None:
         """
@@ -214,7 +222,7 @@ class DeepSee:
         -------
         None
         """
-        self.device.write(f"time.watc {seconds}")
+        self.device.write(f"tim:watc {seconds}")
 
     def close(self):
         self.set_watchdog_time(3)
