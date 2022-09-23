@@ -43,14 +43,14 @@ directly via `DeepSee.device` which is the underlying pyvisa serial object.
 | LCD:BRIGtness | `NotImplemented`|
 | MODE RUN | `NotImplemented`|
 | MODE ALIGN | `NotImplemented`|
-| MODE? | `NotImplemented`|
+| MODE? | `get_mode`|
 | READ:AHIStory? | `NotImplemented`|
 | READ:HUM? | `NotImplemented`|
-| READ:PCTWarmedup? | `NotImplemented`|
+| READ:PCTWarmedup? | `get_pct_warmup`|
 | READ:PLASer:DIODe(n):CURRent? | `NotImplemented`|
 | READ:PLASer:DIODe(n):TEMPerature? | `NotImplemented`|
 | READ:PLASer:DIODe(n):HOURS | `NotImplemented`|
-| READ:POWer? |`NotImplemented`|
+| READ:POWer? |`get_power`|
 | READ:WAVelength? |`get_wavelength`|
 | SAVe |`NotImplemented`|
 | SHUTDOWN | `shutdown`|
@@ -61,6 +61,9 @@ directly via `DeepSee.device` which is the underlying pyvisa serial object.
 | WAVelength? | `get_wavelength`|
 | WAVelength:min? | `min_wavelength` (attribute) |
 | WAVelength:max? | `max_wavelength` (attribute) |
+| CONTrol:MTRMOV (nn.nn) | `set_mtrpos` |
+| CONTrol:MTRMOV? | `NotImplemented` |
+| CONTrol:DSMPOSition? | `get_mtrpos` |
 | \*IDN? | `NotImplemented`|
 | \*STB? | `get_status` |
 
