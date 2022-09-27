@@ -38,12 +38,12 @@ class DeepSee:
             self.rm = ResourceManager()
             self.device = self._setup_device(port_name)
             wdt = self.get_watchdog_time()
-            if wdt > 0: 
+            if wdt > 0:
                 warnings.warn(f"Found watchdog timer set to {wdt:0.1f} seconds.")
                 if disable_watchdog:
                     self.set_watchdog_time(0)
                     print("Disabling watchdog timer.")
-                    
+
         else:
             from .fake_device import FakeDevice
 
@@ -161,6 +161,41 @@ class DeepSee:
         """
 
         return int(self.device.query("read:wav?"))
+
+    def get_power(self) -> int:
+        """
+        Get the current power.
+        """
+
+        return float(self.device.query("read:pow?"))
+
+    def get_mode(self) -> int:
+        """
+        Get the current mode.
+        """
+
+        return self.device.query("MODE?")
+
+    def get_mtrpos(self) -> int:
+        """
+        Get the current DeepSee motor position.
+        """
+
+        return float(self.device.query("control:dsmpos?"))
+
+    def set_mtrpos(self, pos: float) -> None:
+        """
+        Set target DeepSee motor position.
+        """
+
+        self.device.write(f"control:mtrmov {pos}")
+
+    def get_pct_warmup(self) -> int:
+        """
+        Get the current warmup state.
+        """
+
+        return int(self.device.query("read:pctwarmedup?"))
 
     def open_pump_shutter(self)-> None:
         """
